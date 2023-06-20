@@ -1,0 +1,163 @@
+valor_emprest = 0
+valor_emprest_float = 0
+
+qtd_parcelas = 0
+qtd_parcelas_int = 0
+
+porcentagem_entrada = 0
+porcentagem_entrada_float = 0
+
+juros_porcent = 0
+juros_porcent_float = 0
+
+amortização = 0
+pgto = 0
+contador = 0
+juros_valor = 0
+juros_acumulado = 0 
+total_pago = 0
+
+tipo_tabela = 0
+
+import os
+
+# Valor Total
+while True:
+    try :       
+        valor_emprest = input('Qual o valor do empréstimo: ')
+        valor_emprest_float = float(valor_emprest)
+        os.system('cls')
+        break
+    except ValueError:
+        print("Digite apenas números.")
+
+# Numero de Parcelas
+while True:
+    try :       
+        qtd_parcelas = input('Digite o numero de parcelas: ')
+        qtd_parcelas_int = int(qtd_parcelas)
+
+        if qtd_parcelas_int < 0:
+            print('Digite parcelas maiores que 0')
+            continue
+        else:
+            os.system('cls')
+            break
+        
+    except ValueError:
+        print("Digite apenas números")
+
+# Porcentagem da Entrada
+while True:
+    try :       
+        porcentagem_entrada = input('Digite a porcentagem da entrada: ')
+        porcentagem_entrada_float = float(porcentagem_entrada)/100 
+        if porcentagem_entrada_float < 0 or porcentagem_entrada_float > 1:
+            print('Digite um valor entre 0 e 100')
+            continue
+        else:
+            os.system('cls')
+            break
+    except ValueError:
+        print("Digite apenas números inteiros")
+
+# Juros
+while True:
+    try :       
+        juros_porcent = input('Qual a taxa de juros (ao mês): ')
+        juros_porcent_float = float(juros_porcent)/100
+        os.system('cls')
+        break
+    except ValueError:
+        print("Digite apenas números.")
+
+# Explicação das tabelas SAC e Price
+print('Existem 2 tipos tabelas utilizadas para empréstimos.')
+print('')
+print(
+    'A primeira é a tabela SAC, com as primeiras parcelas '
+    'mais caras, mas que decrescem ao longo do tempo. '
+    'É mais difícil de pagar no início, '
+    'mas ao final paga menos juros.'
+)
+print('')
+print(
+    'A segunda é a tabela Price, a qual contem todas as suas'
+    ' parcelas com o mesmo valor. '
+    'É mais fácil de pagar as primeiras parcelas, '
+    'mas ao final paga mais juros.'
+)
+print('')
+# Ecolha do Tipo de Tabela (SAC ou Price)
+while True:
+    tipo_tabela = input('Qual o tipo de tabela será utilizada? ')
+    os.system('cls')
+
+    if  tipo_tabela == 'SAC':
+        break
+    elif  tipo_tabela == 'Price':
+        break  
+    else:
+        print('Digite SAC ou Price')
+
+
+valor_entrada = porcentagem_entrada_float*valor_emprest_float
+
+# Informações dos input's
+a = valor_emprest_float
+b = porcentagem_entrada_float*100
+c = valor_entrada
+d = qtd_parcelas_int
+e = tipo_tabela
+f = juros_porcent
+
+string = ('Você escolheu a tabela {vlr5}. O valor total é R$ {vlr1:=,.2f}. '
+          'A entrada será de {vlr2:.2f}% (R$ {vlr3:=,.2f}), '
+          'e a taxa de juros é de {vlr6} % ao mês. '
+          'O valor total será dividido em {vlr4} parcelas, sendo elas:'
+)
+formato = string.format(
+    vlr1=a, vlr2=b, vlr3=c, vlr4=d, vlr5 = e, vlr6 = f
+    )
+print(formato)
+print('')
+
+valor_emprest_float = valor_emprest_float*(1-porcentagem_entrada_float)
+saldo_devedor = valor_emprest_float
+
+if tipo_tabela == "SAC":
+
+    # Tabela SAC
+    while contador < qtd_parcelas_int:
+
+        contador += 1
+        juros_valor = saldo_devedor*juros_porcent_float
+        amortização = valor_emprest_float/qtd_parcelas_int
+        pgto = juros_valor + amortização
+        saldo_devedor = saldo_devedor - amortização
+
+        juros_acumulado = juros_acumulado + juros_valor
+        total_pago = total_pago + pgto
+
+        print(f'{contador}ª R$ {(round(pgto,2)):=,.2f}')
+
+else:
+
+    # Tabela Price
+    pgto = (valor_emprest_float*((1+juros_porcent_float)**qtd_parcelas_int)*juros_porcent_float)/(((1+juros_porcent_float)**qtd_parcelas_int)-1)
+
+    while contador < qtd_parcelas_int:
+        contador += 1
+
+        juros_valor = saldo_devedor*juros_porcent_float
+        amortização = pgto - juros_valor
+        saldo_devedor = saldo_devedor - amortização
+
+        juros_acumulado = juros_acumulado + juros_valor
+        total_pago = qtd_parcelas_int * pgto
+        print(f'{contador}ª R$ {(round(pgto,2)):=,.2f}')
+
+
+print('')
+print(f'O total a ser pago no parcelamento será de R${round(total_pago, 2):=,.2f} e, '
+    f'você pagará R${round(juros_acumulado, 2):=,.2f} de juros.')
